@@ -1,3 +1,4 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,20 @@ void main() async {
 
   FireBaseApi firebaseApi = FireBaseApi();
   await firebaseApi.initNotification();
+  AwesomeNotifications().initialize(
+    null,
+    [
+      NotificationChannel(
+        channelGroupKey: 'reminders',
+        channelKey: 'instant_notification',
+        channelName: 'Basic Instant Notification',
+        channelDescription:
+            'Notification channel that can trigger notification instantly.',
+        defaultColor: const Color(0xFF9D50DD),
+        ledColor: Colors.white,
+      ),
+    ],
+  );
 
   runApp(const MyApp());
 }

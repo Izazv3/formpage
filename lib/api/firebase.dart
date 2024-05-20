@@ -19,6 +19,8 @@ class FireBaseApi {
 
       // Handle notification message
       print("Message notification: ${message.notification?.title}");
+      Controller.formcontroller.showNotification(
+          message.notification!.title, message.notification!.body);
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
