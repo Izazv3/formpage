@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:formpage/model/user.dart';
 import 'package:get/get.dart';
 
-class FormControlle extends GetxController {
+class FormController extends GetxController {
   TextEditingController userName = TextEditingController();
   TextEditingController userEmail = TextEditingController();
   TextEditingController userId = TextEditingController();

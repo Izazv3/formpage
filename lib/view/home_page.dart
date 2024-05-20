@@ -12,7 +12,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  FireBaseApi api = FireBaseApi();
+  final formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,103 +20,6 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text("Form Page"),
         centerTitle: true,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              "Enter details",
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            TextFormField(
-              controller: Controller.formcontroller.userName,
-              decoration: InputDecoration(
-                  hintText: "User name",
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10))),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            TextFormField(
-              controller: Controller.formcontroller.userProfile,
-              decoration: InputDecoration(
-                  hintText: "https://example.com/image.png",
-                  labelText: "Profile picture",
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10))),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            TextFormField(
-              controller: Controller.formcontroller.userEmail,
-              decoration: InputDecoration(
-                  hintText: "User Email",
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10))),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            TextFormField(
-              controller: Controller.formcontroller.userId,
-              decoration: InputDecoration(
-                  hintText: "User ID",
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10))),
-            ),
-            SizedBox(
-              height: 15,
-            ),
-            SizedBox(
-                width: double.maxFinite,
-                child: ElevatedButton(
-                    onPressed: () {
-                      var obj = User(
-                          name: Controller.formcontroller.userName.text,
-                          email: Controller.formcontroller.userEmail.text,
-                          id: Controller.formcontroller.userId.text,
-                          profile: Controller.formcontroller.userProfile.text);
-                      Controller.formcontroller.userData.add(obj);
-                      FireBaseApi.sendNotificationToFirebase(
-                          "Hello buddy", "How are you");
-                    },
-                    child: Text("Submit"))),
-            SizedBox(
-              height: 20,
-            ),
-            SizedBox(
-              width: double.maxFinite,
-              child: OutlinedButton(
-                  onPressed: () {
-                    Get.to(UserView());
-                  },
-                  child: Text("View User Data")),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class UserView extends StatelessWidget {
-  const UserView({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("User Page"),
       ),
       body: Obx(() => Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -129,13 +32,157 @@ class UserView extends StatelessWidget {
                       : ListView(
                           children: [
                             ...Controller.formcontroller.userData
-                                .map((element) => ListTile(
-                                      title: Text("user"),
+                                .map((element) => Container(
+                                      margin: EdgeInsets.only(
+                                          left: 10, right: 10, bottom: 10),
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                              width: 1,
+                                              color: Colors.grey.shade300)),
+                                      child: ListTile(
+                                        leading: element.profile.isEmpty
+                                            ? Icon(Icons.person)
+                                            : CircleAvatar(
+                                                backgroundImage: NetworkImage(
+                                                    element.profile),
+                                              ),
+                                        trailing: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            IconButton(
+                                                onPressed: () {},
+                                                icon: Icon(Icons.edit)),
+                                            SizedBox(
+                                              width: 5,
+                                            ),
+                                            IconButton(
+                                                onPressed: () {},
+                                                icon: Icon(Icons.delete))
+                                          ],
+                                        ),
+                                        title: Text(
+                                          "${element.name} - (${element.id})",
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w500),
+                                        ),
+                                        subtitle: Text(element.email),
+                                      ),
                                     ))
                           ],
                         ))
             ],
           )),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Get.dialog(AlertDialog(
+            scrollable: true,
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [Text("Fill this form"), CloseButton()],
+            ),
+            content: Form(
+              key: formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextFormField(
+                    controller: Controller.formcontroller.userName,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "Input required";
+                      }
+                      return null;
+                    },
+                    decoration: InputDecoration(
+                        hintText: "User name",
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10))),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  TextFormField(
+                    controller: Controller.formcontroller.userProfile,
+                    decoration: InputDecoration(
+                        hintText: "https://example.com/image.png",
+                        labelText: "Profile picture (optional)",
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10))),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  TextFormField(
+                    controller: Controller.formcontroller.userEmail,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "Input required";
+                      }
+                      return null;
+                    },
+                    decoration: InputDecoration(
+                        hintText: "User Email",
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10))),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  TextFormField(
+                    controller: Controller.formcontroller.userId,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "Input required";
+                      }
+                      return null;
+                    },
+                    decoration: InputDecoration(
+                        hintText: "User ID",
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10))),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  SizedBox(
+                      width: double.maxFinite,
+                      child: ElevatedButton(
+                          onPressed: () {
+                            bool isProfileValid = true;
+
+                            if (Controller
+                                .formcontroller.userProfile.text.isNotEmpty) {
+                              isProfileValid = GetUtils.isURL(
+                                  Controller.formcontroller.userProfile.text);
+                            }
+
+                            if (formKey.currentState!.validate() &&
+                                isProfileValid) {
+                              var obj = User(
+                                  name: Controller.formcontroller.userName.text,
+                                  email:
+                                      Controller.formcontroller.userEmail.text,
+                                  id: Controller.formcontroller.userId.text,
+                                  profile: Controller
+                                      .formcontroller.userProfile.text);
+
+                              Controller.formcontroller.userData.add(obj);
+                              FireBaseApi.sendNotificationToFirebase(
+                                  "New user Created - ${Controller.formcontroller.userName.text}",
+                                  "${Controller.formcontroller.userEmail.text}");
+                              Get.back();
+                            }
+                          },
+                          child: Text("Submit"))),
+                ],
+              ),
+            ),
+          ));
+        },
+        icon: Icon(Icons.add),
+        label: Text("New User"),
+      ),
     );
   }
 }
