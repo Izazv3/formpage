@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "17020547553",
+    "project_id": "formpage-79b23",
+    "storage_bucket": "formpage-79b23.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:17020547553:android:5aa1e3f53a67e97262a2a0",
+        "android_client_info": {
+          "package_name": "com.example.formpage"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgwv15FH_6J51gnEZ2dhSJwu1ra6a7RvI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
