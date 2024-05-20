@@ -9,4 +9,6 @@ class FormControlle extends GetxController {
   TextEditingController userProfile = TextEditingController();
 
   var userData = <User>[].obs;
+
+  String fcmToken = "";
 }

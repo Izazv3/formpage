@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:formpage/api/firebase.dart';
-import 'package:formpage/controller/formcontroller.dart';
+import 'package:formpage/controller.dart';
 import 'package:formpage/model/user.dart';
 import 'package:get/get.dart';
 
@@ -12,7 +12,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  var formcontroller = Get.put(FormControlle());
+  FireBaseApi api = FireBaseApi();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,7 +35,7 @@ class _HomePageState extends State<HomePage> {
               height: 10,
             ),
             TextFormField(
-              controller: formcontroller.userName,
+              controller: Controller.formcontroller.userName,
               decoration: InputDecoration(
                   hintText: "User name",
                   border: OutlineInputBorder(
@@ -45,7 +45,7 @@ class _HomePageState extends State<HomePage> {
               height: 10,
             ),
             TextFormField(
-              controller: formcontroller.userProfile,
+              controller: Controller.formcontroller.userProfile,
               decoration: InputDecoration(
                   hintText: "https://example.com/image.png",
                   labelText: "Profile picture",
@@ -56,7 +56,7 @@ class _HomePageState extends State<HomePage> {
               height: 10,
             ),
             TextFormField(
-              controller: formcontroller.userEmail,
+              controller: Controller.formcontroller.userEmail,
               decoration: InputDecoration(
                   hintText: "User Email",
                   border: OutlineInputBorder(
@@ -66,7 +66,7 @@ class _HomePageState extends State<HomePage> {
               height: 10,
             ),
             TextFormField(
-              controller: formcontroller.userId,
+              controller: Controller.formcontroller.userId,
               decoration: InputDecoration(
                   hintText: "User ID",
                   border: OutlineInputBorder(
@@ -80,15 +80,13 @@ class _HomePageState extends State<HomePage> {
                 child: ElevatedButton(
                     onPressed: () {
                       var obj = User(
-                          name: formcontroller.userName.text,
-                          email: formcontroller.userEmail.text,
-                          id: formcontroller.userId.text,
-                          profile: formcontroller.userProfile.text);
-                      formcontroller.userData.add(obj);
+                          name: Controller.formcontroller.userName.text,
+                          email: Controller.formcontroller.userEmail.text,
+                          id: Controller.formcontroller.userId.text,
+                          profile: Controller.formcontroller.userProfile.text);
+                      Controller.formcontroller.userData.add(obj);
                       FireBaseApi.sendNotificationToFirebase(
-                          "d3jkFVBkQz2P_AOoAn3MSV:APA91bHAxpp48GqC8OxL1OD1m-YGtg_pwWXpHpyObmuJpO0GxCK67gR3qv1yG09sAkR981t8v5XPKbrpxg0YeMA6IpV_tpOvxDDt02nv0S3xyitGJXwcN6DK32BK3wUIVnRRZUNRcF0n",
-                          "Hello buddy",
-                          "How are you");
+                          "Hello buddy", "How are you");
                     },
                     child: Text("Submit"))),
             SizedBox(
@@ -98,7 +96,7 @@ class _HomePageState extends State<HomePage> {
               width: double.maxFinite,
               child: OutlinedButton(
                   onPressed: () {
-                    Get.to(UserView(formcontroller: formcontroller));
+                    Get.to(UserView());
                   },
                   child: Text("View User Data")),
             )
@@ -112,10 +110,7 @@ class _HomePageState extends State<HomePage> {
 class UserView extends StatelessWidget {
   const UserView({
     super.key,
-    required this.formcontroller,
   });
-
-  final FormControlle formcontroller;
 
   @override
   Widget build(BuildContext context) {
@@ -127,13 +122,13 @@ class UserView extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
-                  child: formcontroller.userData.isEmpty
+                  child: Controller.formcontroller.userData.isEmpty
                       ? Center(
                           child: Text("No user found!"),
                         )
                       : ListView(
                           children: [
-                            ...formcontroller.userData
+                            ...Controller.formcontroller.userData
                                 .map((element) => ListTile(
                                       title: Text("user"),
                                     ))
