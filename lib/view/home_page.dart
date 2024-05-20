@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:formpage/api/firebase.dart';
 import 'package:formpage/controller/formcontroller.dart';
 import 'package:formpage/model/user.dart';
 import 'package:get/get.dart';
@@ -15,6 +16,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text("Form Page"),
         centerTitle: true,
@@ -27,7 +29,7 @@ class _HomePageState extends State<HomePage> {
           children: [
             Text(
               "Enter details",
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
             ),
             SizedBox(
               height: 10,
@@ -83,32 +85,62 @@ class _HomePageState extends State<HomePage> {
                           id: formcontroller.userId.text,
                           profile: formcontroller.userProfile.text);
                       formcontroller.userData.add(obj);
+                      FireBaseApi.sendNotificationToFirebase(
+                          "d3jkFVBkQz2P_AOoAn3MSV:APA91bHAxpp48GqC8OxL1OD1m-YGtg_pwWXpHpyObmuJpO0GxCK67gR3qv1yG09sAkR981t8v5XPKbrpxg0YeMA6IpV_tpOvxDDt02nv0S3xyitGJXwcN6DK32BK3wUIVnRRZUNRcF0n",
+                          "Hello buddy",
+                          "How are you");
                     },
                     child: Text("Submit"))),
             SizedBox(
-              height: 30,
+              height: 20,
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  "User Data",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Expanded(
-                    child: ListView(
-                  children: [
-                    ...formcontroller.userData.map((element) => ListTile())
-                  ],
-                ))
-              ],
+            SizedBox(
+              width: double.maxFinite,
+              child: OutlinedButton(
+                  onPressed: () {
+                    Get.to(UserView(formcontroller: formcontroller));
+                  },
+                  child: Text("View User Data")),
             )
           ],
         ),
       ),
+    );
+  }
+}
+
+class UserView extends StatelessWidget {
+  const UserView({
+    super.key,
+    required this.formcontroller,
+  });
+
+  final FormControlle formcontroller;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("User Page"),
+      ),
+      body: Obx(() => Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                  child: formcontroller.userData.isEmpty
+                      ? Center(
+                          child: Text("No user found!"),
+                        )
+                      : ListView(
+                          children: [
+                            ...formcontroller.userData
+                                .map((element) => ListTile(
+                                      title: Text("user"),
+                                    ))
+                          ],
+                        ))
+            ],
+          )),
     );
   }
 }
