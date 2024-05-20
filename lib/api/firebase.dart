@@ -14,8 +14,8 @@ class FireBaseApi {
       // Handle notification message
       print("Message notification: ${message.notification?.title}");
 
-      RemoteNotification notification = message.notification!;
-      AndroidNotification? android = message.notification!.android;
+      // RemoteNotification notification = message.notification!;
+      // AndroidNotification? android = message.notification!.android;
 
       // flutterLocalNotificationsPlugin.show(
       //   notification.hashCode,
