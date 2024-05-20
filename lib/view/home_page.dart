@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:formpage/controller/formcontroller.dart';
+import 'package:formpage/model/user.dart';
 import 'package:get/get.dart';
 
 class HomePage extends StatefulWidget {
@@ -74,7 +75,37 @@ class _HomePageState extends State<HomePage> {
             ),
             SizedBox(
                 width: double.maxFinite,
-                child: ElevatedButton(onPressed: () {}, child: Text("Submit")))
+                child: ElevatedButton(
+                    onPressed: () {
+                      var obj = User(
+                          name: formcontroller.userName.text,
+                          email: formcontroller.userEmail.text,
+                          id: formcontroller.userId.text,
+                          profile: formcontroller.userProfile.text);
+                      formcontroller.userData.add(obj);
+                    },
+                    child: Text("Submit"))),
+            SizedBox(
+              height: 30,
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  "User Data",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Expanded(
+                    child: ListView(
+                  children: [
+                    ...formcontroller.userData.map((element) => ListTile())
+                  ],
+                ))
+              ],
+            )
           ],
         ),
       ),
