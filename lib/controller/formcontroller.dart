@@ -6,10 +6,13 @@ import 'package:formpage/model/user.dart';
 import 'package:get/get.dart';
 
 class FormController extends GetxController {
-  TextEditingController userName = TextEditingController();
-  TextEditingController userEmail = TextEditingController();
-  TextEditingController userId = TextEditingController();
-  TextEditingController userProfile = TextEditingController();
+  TextEditingController userName = TextEditingController(text: "rose");
+  TextEditingController userEmail =
+      TextEditingController(text: "rose1234@gmail.com");
+  TextEditingController userId = TextEditingController(text: "12345678");
+  TextEditingController userProfile = TextEditingController(
+      text:
+          "https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg");
 
   var userData = <User>[].obs;
 

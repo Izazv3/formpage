@@ -13,13 +13,13 @@ class FireBaseApi {
     Controller.formcontroller.fcmToken = FCMtoken!;
 
     print("fcm token : ${Controller.formcontroller.fcmToken}");
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       // Handle data message
       print("Message data: ${message.data}");
 
       // Handle notification message
       print("Message notification: ${message.notification?.title}");
-      Controller.formcontroller.showNotification(
+      await Controller.formcontroller.showNotification(
           message.notification!.title, message.notification!.body);
     });
 

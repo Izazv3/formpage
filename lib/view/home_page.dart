@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:formpage/api/firebase.dart';
 import 'package:formpage/controller.dart';
 import 'package:formpage/model/user.dart';
+import 'package:formpage/utils/database.dart';
 import 'package:get/get.dart';
 
 class HomePage extends StatefulWidget {
@@ -13,6 +14,22 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final formKey = GlobalKey<FormState>();
+  @override
+  void initState() {
+    initDB();
+    fetchUser();
+    super.initState();
+  }
+
+  Future initDB() async {
+    await DatabaseHelper().database;
+  }
+
+  Future fetchUser() async {
+    var e = await DatabaseHelper().getUsers();
+    print(e);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,7 +44,7 @@ class _HomePageState extends State<HomePage> {
               Expanded(
                   child: Controller.formcontroller.userData.isEmpty
                       ? Center(
-                          child: Text("No user found!"),
+                          child: Text("Create a first user"),
                         )
                       : ListView(
                           children: [
@@ -59,8 +76,10 @@ class _HomePageState extends State<HomePage> {
                                                       .formcontroller
                                                       .userEmail
                                                       .text = element.email;
-                                                  Controller.formcontroller
-                                                      .userId.text = element.id;
+                                                  Controller
+                                                      .formcontroller
+                                                      .userId
+                                                      .text = element.userId;
                                                   Controller
                                                       .formcontroller
                                                       .userProfile
@@ -80,7 +99,7 @@ class _HomePageState extends State<HomePage> {
                                           ],
                                         ),
                                         title: Text(
-                                          "${element.name} - (${element.id})",
+                                          "${element.name} - (${element.userId})",
                                           style: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.w500),
@@ -124,127 +143,147 @@ class _FormDialogState extends State<FormDialog> {
   @override
   void initState() {
     if (widget.from == "Add") {
-      Controller.formcontroller.userProfile.clear();
+      // Controller.formcontroller.userProfile.clear();
 
-      Controller.formcontroller.userName.clear();
+      // Controller.formcontroller.userName.clear();
 
-      Controller.formcontroller.userId.clear();
+      // Controller.formcontroller.userId.clear();
 
-      Controller.formcontroller.userEmail.clear();
+      // Controller.formcontroller.userEmail.clear();
     }
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          widget.from == "Add" ? Text("Fill this form") : Text("Update Form"),
-          CloseButton()
-        ],
-      ),
-      content: SingleChildScrollView(
-        child: Form(
-          key: widget.formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextFormField(
-                controller: Controller.formcontroller.userName,
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return "Input required";
-                  }
-                  return null;
-                },
-                decoration: InputDecoration(
-                    hintText: "User name",
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10))),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              TextFormField(
-                controller: Controller.formcontroller.userProfile,
-                decoration: InputDecoration(
-                    hintText: "https://example.com/image.png",
-                    labelText: "Profile picture (optional)",
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10))),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              TextFormField(
-                controller: Controller.formcontroller.userEmail,
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return "Input required";
-                  }
+    return Dialog.fullscreen(
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                widget.from == "Add"
+                    ? Text("Fill this form")
+                    : Text("Update Form"),
+                CloseButton()
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: Divider(),
+            ),
+            Expanded(
+              child: Form(
+                key: widget.formKey,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextFormField(
+                        controller: Controller.formcontroller.userName,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return "Input required";
+                          }
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                            hintText: "User name",
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10))),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      TextFormField(
+                        controller: Controller.formcontroller.userProfile,
+                        decoration: InputDecoration(
+                            hintText: "https://example.com/image.png",
+                            labelText: "Profile picture (optional)",
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10))),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      TextFormField(
+                        controller: Controller.formcontroller.userEmail,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return "Input required";
+                          }
 
-                  if (!GetUtils.isEmail(value)) {
-                    return "Invalid email";
-                  }
-                  return null;
-                },
-                decoration: InputDecoration(
-                    hintText: "User Email",
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10))),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              TextFormField(
-                controller: Controller.formcontroller.userId,
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return "Input required";
-                  }
-                  return null;
-                },
-                decoration: InputDecoration(
-                    hintText: "User ID",
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10))),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              SizedBox(
-                  width: double.maxFinite,
-                  child: ElevatedButton(
-                      onPressed: () {
-                        bool isProfileValid = true;
+                          if (!GetUtils.isEmail(value)) {
+                            return "Invalid email";
+                          }
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                            hintText: "User Email",
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10))),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      TextFormField(
+                        controller: Controller.formcontroller.userId,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return "Input required";
+                          }
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                            hintText: "User ID",
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10))),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      SizedBox(
+                          width: double.maxFinite,
+                          child: ElevatedButton(
+                              onPressed: () async {
+                                bool isProfileValid = true;
 
-                        if (Controller
-                            .formcontroller.userProfile.text.isNotEmpty) {
-                          isProfileValid = GetUtils.isURL(
-                              Controller.formcontroller.userProfile.text);
-                        }
+                                if (Controller.formcontroller.userProfile.text
+                                    .isNotEmpty) {
+                                  isProfileValid = GetUtils.isURL(Controller
+                                      .formcontroller.userProfile.text);
+                                }
 
-                        if (widget.formKey.currentState!.validate() &&
-                            isProfileValid) {
-                          var obj = User(
-                              name: Controller.formcontroller.userName.text,
-                              email: Controller.formcontroller.userEmail.text,
-                              id: Controller.formcontroller.userId.text,
-                              profile:
-                                  Controller.formcontroller.userProfile.text);
+                                if (widget.formKey.currentState!.validate() &&
+                                    isProfileValid) {
+                                  var obj = User(
+                                      name: Controller
+                                          .formcontroller.userName.text,
+                                      email: Controller
+                                          .formcontroller.userEmail.text,
+                                      userId:
+                                          Controller.formcontroller.userId.text,
+                                      profile: Controller
+                                          .formcontroller.userProfile.text);
 
-                          Controller.formcontroller.userData.add(obj);
-                          FireBaseApi.sendNotificationToFirebase(
-                              "New user Created - ${Controller.formcontroller.userName.text}",
-                              "${Controller.formcontroller.userEmail.text}");
-                          Get.back();
-                        }
-                      },
-                      child: Text("Complete"))),
-            ],
-          ),
+                                  await DatabaseHelper().insertUser(obj);
+
+                                  FireBaseApi.sendNotificationToFirebase(
+                                      "New user Created - ${Controller.formcontroller.userName.text}",
+                                      "${Controller.formcontroller.userEmail.text}");
+
+                                  Get.back();
+                                }
+                              },
+                              child: Text("Complete"))),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
