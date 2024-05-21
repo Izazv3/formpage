@@ -5,14 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:formpage/model/user.dart';
 import 'package:get/get.dart';
 
+import '../utils/database.dart';
+
 class FormController extends GetxController {
-  TextEditingController userName = TextEditingController(text: "rose");
-  TextEditingController userEmail =
-      TextEditingController(text: "rose1234@gmail.com");
-  TextEditingController userId = TextEditingController(text: "12345678");
-  TextEditingController userProfile = TextEditingController(
-      text:
-          "https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg");
+  TextEditingController userName = TextEditingController(text: "");
+  TextEditingController userEmail = TextEditingController(text: "");
+  TextEditingController userProfile = TextEditingController(text: "");
 
   var userData = <User>[].obs;
 
@@ -35,5 +33,11 @@ class FormController extends GetxController {
         channelKey: 'instant_notification',
       ),
     );
+  }
+
+  Future<void> fetchUser() async {
+    var users = await DatabaseHelper().getUsers();
+
+    userData.value = users.toList();
   }
 }

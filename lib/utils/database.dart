@@ -20,29 +20,27 @@ class DatabaseHelper {
     String path = join(await getDatabasesPath(), 'Users_database.db');
     return await openDatabase(
       path,
-      version: 2, // Incremented version to force re-creation
-      onCreate: _onCreate,
-      onUpgrade: _onUpgrade,
+      version: 2,
+      onCreate: (Database db, int version) async {
+        // When creating the db, create the table
+        await db.execute(
+            'CREATE TABLE Users ( id INTEGER PRIMARY KEY AUTOINCREMENT,user_id TEXT, name TEXT, profile TEXT, email TEXT)');
+      },
     );
   }
 
-  Future<void> _onCreate(Database db, int version) async {
-    await db.execute('''
-      CREATE TABLE Users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        profile TEXT NOT NULL,
-        email TEXT NOT NULL
-      )
-    ''');
-  }
-
-  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    if (oldVersion < newVersion) {
-      await db.execute('DROP TABLE IF EXISTS Users');
-      await _onCreate(db, newVersion);
-    }
-  }
+  // Future<void> _onCreate(Database db, int version) async {
+  //   print("database>>>>>>>>>>>>");
+  //   await db.execute('''
+  //     CREATE TABLE Users (
+  //       id INTEGER PRIMARY KEY AUTOINCREMENT,
+  //       name TEXT NOT NULL,
+  //       profile TEXT NOT NULL,
+  //       email TEXT NOT NULL
+  //     )
+  //   ''');
+  //   print("database<<<<<<<<<<<>>>>>>>>>>>");
+  // }
 
   // Insert a User into the database
   Future<int> insertUser(User user) async {
@@ -61,13 +59,13 @@ class DatabaseHelper {
   }
 
   // Update a User in the database
-  Future<int> updateUser(User user) async {
+  Future<int> updateUser(User user, id) async {
     Database db = await database;
     return await db.update(
       'Users',
       user.toMap(),
       where: 'id = ?',
-      whereArgs: [user.id],
+      whereArgs: [id],
     );
   }
 

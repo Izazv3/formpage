@@ -17,17 +17,12 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     initDB();
-    fetchUser();
+    Controller.formcontroller.fetchUser();
     super.initState();
   }
 
   Future initDB() async {
     await DatabaseHelper().database;
-  }
-
-  Future fetchUser() async {
-    var e = await DatabaseHelper().getUsers();
-    print(e);
   }
 
   @override
@@ -76,16 +71,14 @@ class _HomePageState extends State<HomePage> {
                                                       .formcontroller
                                                       .userEmail
                                                       .text = element.email;
-                                                  Controller
-                                                      .formcontroller
-                                                      .userId
-                                                      .text = element.userId;
+
                                                   Controller
                                                       .formcontroller
                                                       .userProfile
                                                       .text = element.profile;
                                                   Get.dialog(FormDialog(
                                                     formKey: formKey,
+                                                    userId: element.id!,
                                                     from: "Edit",
                                                   ));
                                                 },
@@ -94,12 +87,37 @@ class _HomePageState extends State<HomePage> {
                                               width: 5,
                                             ),
                                             IconButton(
-                                                onPressed: () {},
+                                                onPressed: () {
+                                                  Get.dialog(AlertDialog(
+                                                    title: Text(
+                                                        "Are you sure to delete?"),
+                                                    actions: [
+                                                      TextButton(
+                                                          onPressed: () {
+                                                            Get.back();
+                                                          },
+                                                          child: Text("Back")),
+                                                      TextButton(
+                                                          onPressed: () async {
+                                                            await DatabaseHelper()
+                                                                .deleteUser(
+                                                                    element.id!)
+                                                                .then((value) =>
+                                                                    Controller
+                                                                        .formcontroller
+                                                                        .fetchUser());
+
+                                                            Get.back();
+                                                          },
+                                                          child: Text("Delete"))
+                                                    ],
+                                                  ));
+                                                },
                                                 icon: Icon(Icons.delete))
                                           ],
                                         ),
                                         title: Text(
-                                          "${element.name} - (${element.userId})",
+                                          "${element.name} - (${element.id})",
                                           style: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.w500),
@@ -126,14 +144,12 @@ class _HomePageState extends State<HomePage> {
 }
 
 class FormDialog extends StatefulWidget {
-  const FormDialog({
-    super.key,
-    required this.formKey,
-    required this.from,
-  });
+  const FormDialog(
+      {super.key, required this.formKey, required this.from, this.userId});
 
   final GlobalKey<FormState> formKey;
   final String from;
+  final int? userId;
 
   @override
   State<FormDialog> createState() => _FormDialogState();
@@ -143,13 +159,11 @@ class _FormDialogState extends State<FormDialog> {
   @override
   void initState() {
     if (widget.from == "Add") {
-      // Controller.formcontroller.userProfile.clear();
+      Controller.formcontroller.userProfile.clear();
 
-      // Controller.formcontroller.userName.clear();
+      Controller.formcontroller.userName.clear();
 
-      // Controller.formcontroller.userId.clear();
-
-      // Controller.formcontroller.userEmail.clear();
+      Controller.formcontroller.userEmail.clear();
     }
     super.initState();
   }
@@ -165,8 +179,16 @@ class _FormDialogState extends State<FormDialog> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 widget.from == "Add"
-                    ? Text("Fill this form")
-                    : Text("Update Form"),
+                    ? Text(
+                        "Fill this form",
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.w600),
+                      )
+                    : Text(
+                        "Update Form",
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.w600),
+                      ),
                 CloseButton()
               ],
             ),
@@ -177,109 +199,105 @@ class _FormDialogState extends State<FormDialog> {
             Expanded(
               child: Form(
                 key: widget.formKey,
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      TextFormField(
-                        controller: Controller.formcontroller.userName,
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "Input required";
-                          }
-                          return null;
-                        },
-                        decoration: InputDecoration(
-                            hintText: "User name",
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10))),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      TextFormField(
-                        controller: Controller.formcontroller.userProfile,
-                        decoration: InputDecoration(
-                            hintText: "https://example.com/image.png",
-                            labelText: "Profile picture (optional)",
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10))),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      TextFormField(
-                        controller: Controller.formcontroller.userEmail,
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "Input required";
-                          }
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextFormField(
+                      controller: Controller.formcontroller.userName,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return "Input required";
+                        }
+                        return null;
+                      },
+                      decoration: InputDecoration(
+                          hintText: "User name",
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10))),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    TextFormField(
+                      controller: Controller.formcontroller.userProfile,
+                      decoration: InputDecoration(
+                          hintText: "https://example.com/image.png",
+                          labelText: "Profile picture (optional)",
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10))),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    TextFormField(
+                      controller: Controller.formcontroller.userEmail,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return "Input required";
+                        }
 
-                          if (!GetUtils.isEmail(value)) {
-                            return "Invalid email";
-                          }
-                          return null;
-                        },
-                        decoration: InputDecoration(
-                            hintText: "User Email",
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10))),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      TextFormField(
-                        controller: Controller.formcontroller.userId,
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "Input required";
-                          }
-                          return null;
-                        },
-                        decoration: InputDecoration(
-                            hintText: "User ID",
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10))),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      SizedBox(
-                          width: double.maxFinite,
-                          child: ElevatedButton(
-                              onPressed: () async {
-                                bool isProfileValid = true;
+                        if (!GetUtils.isEmail(value)) {
+                          return "Invalid email";
+                        }
+                        return null;
+                      },
+                      decoration: InputDecoration(
+                          hintText: "User Email",
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10))),
+                    ),
+                    Spacer(),
+                    SizedBox(
+                        width: double.maxFinite,
+                        child: ElevatedButton(
+                            onPressed: () async {
+                              bool isProfileValid = true;
 
-                                if (Controller.formcontroller.userProfile.text
-                                    .isNotEmpty) {
-                                  isProfileValid = GetUtils.isURL(Controller
-                                      .formcontroller.userProfile.text);
-                                }
+                              if (Controller
+                                  .formcontroller.userProfile.text.isNotEmpty) {
+                                isProfileValid = GetUtils.isURL(
+                                    Controller.formcontroller.userProfile.text);
+                              }
 
-                                if (widget.formKey.currentState!.validate() &&
-                                    isProfileValid) {
+                              if (widget.formKey.currentState!.validate()) {
+                                if (isProfileValid) {
                                   var obj = User(
                                       name: Controller
                                           .formcontroller.userName.text,
                                       email: Controller
                                           .formcontroller.userEmail.text,
-                                      userId:
-                                          Controller.formcontroller.userId.text,
                                       profile: Controller
                                           .formcontroller.userProfile.text);
 
-                                  await DatabaseHelper().insertUser(obj);
+                                  if (widget.from == 'Add') {
+                                    await DatabaseHelper().insertUser(obj).then(
+                                        (value) => Controller.formcontroller
+                                            .fetchUser());
 
-                                  FireBaseApi.sendNotificationToFirebase(
-                                      "New user Created - ${Controller.formcontroller.userName.text}",
-                                      "${Controller.formcontroller.userEmail.text}");
+                                    FireBaseApi.sendNotificationToFirebase(
+                                        "New user Created - ${Controller.formcontroller.userName.text}",
+                                        "${Controller.formcontroller.userEmail.text}");
+                                  } else if (widget.from == "Edit") {
+                                    await DatabaseHelper()
+                                        .updateUser(obj, widget.userId)
+                                        .then((value) => Controller
+                                            .formcontroller
+                                            .fetchUser());
+
+                                    FireBaseApi.sendNotificationToFirebase(
+                                        "User updated - ${Controller.formcontroller.userName.text}",
+                                        "${Controller.formcontroller.userEmail.text}");
+                                  }
 
                                   Get.back();
+                                } else {
+                                  Get.snackbar(
+                                      "Profic url not valid", "invalid url");
                                 }
-                              },
-                              child: Text("Complete"))),
-                    ],
-                  ),
+                              }
+                            },
+                            child: Text("Complete"))),
+                  ],
                 ),
               ),
             ),
