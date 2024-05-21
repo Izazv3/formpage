@@ -24,7 +24,7 @@ class DatabaseHelper {
       onCreate: (Database db, int version) async {
         // When creating the db, create the table
         await db.execute(
-            'CREATE TABLE Users ( id INTEGER PRIMARY KEY AUTOINCREMENT,user_id TEXT, name TEXT, profile TEXT, email TEXT)');
+            'CREATE TABLE Users ( id INTEGER PRIMARY KEY AUTOINCREMENT,user_id TEXT, name TEXT, profile BLOB, email TEXT)');
       },
     );
   }

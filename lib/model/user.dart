@@ -1,14 +1,16 @@
+import 'dart:typed_data';
+
 class User {
   final int? id;
   final String name;
   final String email;
-  final String profile;
+  Uint8List? profile;
 
   User({
     this.id,
     required this.name,
     required this.email,
-    required this.profile,
+    this.profile,
   });
 
   Map<String, dynamic> toMap() {
@@ -24,7 +26,7 @@ class User {
       id: map['id'] ?? "",
       name: map['name'] ?? "",
       email: map['email'] ?? "",
-      profile: map['profile'] ?? "",
+      profile: map['profile'],
     );
   }
 }
