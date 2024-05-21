@@ -45,11 +45,11 @@ class FormController extends GetxController {
     userData.value = users.toList();
   }
 
-  Future<void> pickImage({required bool isGallery}) async {
+  Future<void> pickImage() async {
     isFilePicked.value = false;
     final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(
-        source: isGallery ? ImageSource.gallery : ImageSource.camera);
+    final pickedFile =
+        await picker.pickImage(source: ImageSource.gallery, imageQuality: 50);
 
     if (pickedFile != null) {
       profileImage = await pickedFile.readAsBytes();

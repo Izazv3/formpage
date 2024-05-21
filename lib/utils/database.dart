@@ -29,19 +29,6 @@ class DatabaseHelper {
     );
   }
 
-  // Future<void> _onCreate(Database db, int version) async {
-  //   print("database>>>>>>>>>>>>");
-  //   await db.execute('''
-  //     CREATE TABLE Users (
-  //       id INTEGER PRIMARY KEY AUTOINCREMENT,
-  //       name TEXT NOT NULL,
-  //       profile TEXT NOT NULL,
-  //       email TEXT NOT NULL
-  //     )
-  //   ''');
-  //   print("database<<<<<<<<<<<>>>>>>>>>>>");
-  // }
-
   // Insert a User into the database
   Future<int> insertUser(User user) async {
     Database db = await database;

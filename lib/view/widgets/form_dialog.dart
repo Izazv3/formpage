@@ -5,7 +5,6 @@ import '../../api/firebase.dart';
 import '../../controller.dart';
 import '../../model/user.dart';
 import '../../utils/database.dart';
-import 'bottomsheet.dart';
 
 class FormDialog extends StatefulWidget {
   const FormDialog(
@@ -142,7 +141,8 @@ class _FormDialogState extends State<FormDialog> {
                                       width: double.maxFinite,
                                       child: OutlinedButton(
                                           onPressed: () {
-                                            bottomSheet(context);
+                                            Controller.formcontroller
+                                                .pickImage();
                                           },
                                           child: Text("Pick Profile image")),
                                     ),

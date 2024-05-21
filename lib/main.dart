@@ -3,7 +3,6 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:formpage/api/firebase.dart';
-import 'package:formpage/utils/database.dart';
 import 'package:formpage/view/home_page.dart';
 import 'package:get/get.dart';
 
